@@ -31,8 +31,8 @@
 ...
 [2024-04-03 20:11:52] 分块150上传成功
 [2024-04-03 20:11:54] 分块151上传成功
-{"result":0,"videoId":33890124,"host-name":"hb2-acfun-kce-node34.aliyun"}
-o_1hqhtuv3o18mi1fua1a4511lf1l4g0
+{"result":0,"videoId":*****,"host-name":"hb2-acfun-kce-node34.aliyun"}
+*****
 {"result":0,"info":{"token":"***-********","appEndpointList":[{"host":"********","port":6666},{"host":"****","port":6666},{"host":"****","port":6666}],"httpEndpointList":["upload.kuaishouzt.com"]},"host-name":"hb2-acfun-kce-node174.aliyun"}
 [2024-04-03 20:11:57] 分块1上传成功
 [2024-04-03 20:11:57] 视频投稿结果！AC号：{"result":0,"dougaId":****,"host-name":"hb2-acfun-kce-node21.aliyun"}
