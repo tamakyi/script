@@ -4,7 +4,7 @@ import os
 import re
 from acfun_upload import AcFun
 acfun = AcFun()
-acfun.login(username = "  ", password = "  ")
+acfun.login(username = " ", password = " ")
 def extract_first_frame(input_video, output_image):
     # FFmpeg命令来提取第一帧
     ffmpeg_command = [
@@ -33,7 +33,7 @@ if not f_channel_id:
 extract_first_frame(f_path, 'output_frame.jpg')
 f_cover = input("选择封面路径:如不输入默认截取视频的第一帧)")
 if not f_cover:
-    f_cover = './output_frame.jpg'
+    f_cover = '/home/tamakyi/Github/acfun_upload/output_frame.jpg'
 f_desc=input("输入视频介绍:(如不输入默认为视频标题)")
 if not f_desc:
     f_desc = f_title
@@ -50,3 +50,5 @@ print("请检查配置是否正确:\n")
 print('视频名称为', f_title, '\n视频地址为', f_path, '\n投稿分区为', f_channel_id, '\n视频介绍信息为', f_desc, '\n标签信息为', f_tags, '\n该视频为转载，原地址为', f_originalLinkUrl)
 input("按任意键继续...")
 acfun.create_douga(file_path=f_path, title=f_title, channel_id=f_channel_id, cover=f_cover, desc=f_desc, tags=f_tags, creation_type=f_creation_type, originalLinkUrl=f_originalLinkUrl)
+os.remove('/home/tamakyi/Github/acfun_upload/output_frame.jpg')
+print("Complete! cover file path clear now!")
