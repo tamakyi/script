@@ -2,6 +2,7 @@ import re
 import tkinter as tk
 from tkinter import filedialog
 import os
+import sys
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
@@ -18,7 +19,7 @@ import win32gui
 import win32con
 import cv2
 import random
-#必须安装的包：selenium pywin32 cv2
+#必须安装的包：selenium pywin32 opencv-python
 
 
 #定义函数使用对话框导入文件同时获取文件名
@@ -40,8 +41,6 @@ def upload(filePath, browser_type="chrome"):
         title = "打开"
     elif browser_type.lower() == "firefox":
         title = "文件上传"
-    elif browser_type.lower() == "ie":
-        title = "选择要加载的文件"
     elif browser_type.lower() == "edge":
         title = "打开"
     else:
@@ -62,6 +61,22 @@ def upload(filePath, browser_type="chrome"):
     win32gui.SendMessage(edit, win32con.WM_SETTEXT, None, filePath)  # 发送文件路径
     win32gui.SendMessage(dialog, win32con.WM_COMMAND, 1, button)  # 点击打开按钮
 
+#定义登录信息
+print('请在脚本同级目录新建一个acfun_info.txt，第一行作为用户名，第二行作为密码:\n')
+current_folder = os.path.dirname(os.path.abspath(__file__))
+script_path = os.path.join(current_folder, 'acfun_info.txt')
+if not os.path.exists(script_path):
+    print("文件不存在，停止脚本运行\n")
+    sys.exit()
+
+with open(script_path, 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+    uname_info = lines[0].strip()
+    pword_info = lines[1].strip()
+
+sleep(2)
+print("账户信息获取成功，开始准备登录步骤！\n")
+
 #基础信息定义
 origin_file_path = get_filename()
 file_name_without_extension = os.path.splitext(os.path.basename(origin_file_path))[0] #获取不带后缀的文件名
@@ -74,9 +89,13 @@ formatted_date = s_text_origin.replace("-", "")
 output = f"[AC娘录播] {title} {formatted_date[:8]}直播录播"
 simpletext=f"开播时间:{s_text_origin}"
 
+sleep(1)
 print("输入的文件绝对路径是：\n",origin_file_path)
+sleep(1)
 print("输出的标题是:\n",output)
+sleep(1)
 print("简介内容是:\n",simpletext)
+sleep(1)
 print("即将调用edge dev进行网页调试\n")
 
 service = Service(executable_path='C:\\Program Files (x86)\\Microsoft\\Edge Dev\\Application\\msedge.exe')
@@ -91,13 +110,13 @@ switch_login = driver.find_element(By.ID, "login-switch")
 switch_login.click()
 username_input = driver.find_element(By.ID, 'ipt-account-login')
 password_input = driver.find_element(By.ID, 'ipt-pwd-login')
-username_input.send_keys('用户名')
+username_input.send_keys(uname_info)
 sleep(2)
-password_input.send_keys('密码')
+password_input.send_keys(pword_info)
 login_button = driver.find_element(By.XPATH, '//*[@id="form-login"]/div[4]/div')
 login_button.click()
 sleep(10)
-print("\n登陆成功！准备跳转到上传页面...")
+print("登陆成功！准备跳转到上传页面...\n")
 
 #跳转上传页面
 driver.get('https://member.acfun.cn/upload-video')
@@ -115,8 +134,11 @@ tag_info.send_keys('AC娘录播')
 tag_info.send_keys(Keys.ENTER)
 upload_info = driver.find_element(By.XPATH,'/html/body/div[1]/div[2]/div[2]/div/div/div/form/div/div[6]/div[2]/div/div/div/textarea')
 upload_info.send_keys(simpletext)
+
 #分区选择
-area_select_1 = driver.find_element(By.XPATH,'/html/body/div[1]/div[2]/div[2]/div/div/div/form/div/div[4]/div[2]/div/div')
+area_select_1 = driver.find_element(By.XPATH,'/html/body/div[1]/div[2]/div[2]/div/div/div/form/div/div[4]/div[2]/div/div/input')
+#driver.execute_script("arguments[0].removeAttribute('readonly');", area_select)
+#area_select.send_keys('动画-虚拟偶像') #尝试通过去除readonly标签直接输入，但无效
 area_select_1.click()
 sleep(2)
 area_select_2 = driver.find_element(By.XPATH,'/html/body/div[12]/div[1]/div[1]/div[1]/ul/li[1]')
@@ -137,15 +159,16 @@ ret, frame = cap.read()
 if ret:
     # 保存图片
     cv2.imwrite(screenshot_output, frame)
-    print(f'Screenshot saved to {screenshot_output}')
+    print(f'截取所选视频的第 {frame_number} 帧保存为 {screenshot_output} 并作为封面！\n')
 else:
-    print('Failed to read the frame')
+    print('无法获取该帧，请手动上传封面\n')
  
 # 释放视频捕获对象
 cap.release()
 sleep(5)
 
 #上传截图
+print('开始上传封面...\n')
 photo_upload_button = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/form/div/div[1]/div[1]/div[1]/div/div') #此处可以定位到文件上传按钮，下一步执行点击。但需要调用系统文件选择器，所以无法直接使用。
 photo_upload_button.click()
 sleep(2)
@@ -154,11 +177,13 @@ sleep(5)
 photo_upload_button_conf = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div/div/div[3]/div/button') #此处可以定位到文件上传按钮，下一步执行点击。但需要调用系统文件选择器，所以无法直接使用。
 photo_upload_button_conf.click()
 sleep(2)
+print('封面上传完成...\n')
 
 #文件上传
 upload_button = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div[2]/div/div[3]/div/div/div/button') #此处可以定位到文件上传按钮，下一步执行点击。但需要调用系统文件选择器，所以无法直接使用。
 upload_button.click()
 sleep(2)
+print('开始上传视频...\n')
 upload(os.path.normpath(origin_file_path)) #调用前面的绝对路径，使用normpath方法自动替换为python可识别的路径
 sleep(5)
 #upload_button.send_keys(origin_file_path)
@@ -166,10 +191,11 @@ sleep(5)
 #发布内容
 release_button = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/form/div/div[14]')
 release_button.click()
+print('本次上传作业结束。\n')
 
 
 #print("\n按下任意键退出程序")
 #msvcrt.getch()  # 等待任意键被按下
 #print("\n程序已退出")
-#os.system('pause') #调用cmd的按键退出
+os.system('pause') #调用cmd的按键退出
 #os.system('read') #linux实现按键退出
