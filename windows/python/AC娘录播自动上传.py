@@ -19,7 +19,11 @@ import win32gui
 import win32con
 import cv2
 import random
-#必须安装的包：selenium pywin32 opencv-python
+
+#必须安装的包：selenium pywin32 cv2
+
+#定义帧默认值函数
+
 
 
 #定义函数使用对话框导入文件同时获取文件名
@@ -41,6 +45,8 @@ def upload(filePath, browser_type="chrome"):
         title = "打开"
     elif browser_type.lower() == "firefox":
         title = "文件上传"
+    elif browser_type.lower() == "ie":
+        title = "选择要加载的文件"
     elif browser_type.lower() == "edge":
         title = "打开"
     else:
@@ -140,11 +146,14 @@ area_select_1 = driver.find_element(By.XPATH,'/html/body/div[1]/div[2]/div[2]/di
 #driver.execute_script("arguments[0].removeAttribute('readonly');", area_select)
 #area_select.send_keys('动画-虚拟偶像') #尝试通过去除readonly标签直接输入，但无效
 area_select_1.click()
-sleep(2)
-area_select_2 = driver.find_element(By.XPATH,'/html/body/div[12]/div[1]/div[1]/div[1]/ul/li[1]')
+#using js
+#js_code = "arguments[0].innerHTML = '动画-虚拟偶像'"
+#driver.execute_script(js_code, area_select)
+sleep(5)
+area_select_2 = driver.find_element(By.XPATH,'/html/body/div[13]/div[1]/div[1]/div[1]/ul/li[1]')
 area_select_2.click()
-sleep(2)
-area_select_3 = driver.find_element(By.XPATH,'/html/body/div[12]/div[1]/div[2]/div[1]/ul/li[5]')
+sleep(5)
+area_select_3 = driver.find_element(By.XPATH,'/html/body/div[13]/div[1]/div[2]/div[1]/ul/li[5]/span')
 area_select_3.click()
 
 #处理截图
@@ -152,8 +161,12 @@ temp_dir = os.environ['TEMP']
 random_integer = random.randint(1, 100000000)
 screenshot_output = temp_dir + '\\' + str(random_integer) + '.jpg'
 #screenshot_output = os.path.join(temp_dir, new_file_name_without_extension, '.jpg')
-frame_number = 100 #指定帧
+
+frame_number = 100  #指定帧
 cap = cv2.VideoCapture(origin_file_path)
+frames_num_totla = cap.get(7)
+print("该视频一共 ", frames_num_totla ," 帧")
+sleep(1)
 cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
 ret, frame = cap.read()
 if ret:
@@ -197,5 +210,5 @@ print('本次上传作业结束。\n')
 #print("\n按下任意键退出程序")
 #msvcrt.getch()  # 等待任意键被按下
 #print("\n程序已退出")
-os.system('pause') #调用cmd的按键退出
+#os.system('pause') #调用cmd的按键退出
 #os.system('read') #linux实现按键退出
